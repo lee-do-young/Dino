@@ -96,10 +96,11 @@ function GamePage({ navigation }){
           const movedDistance = distance+10;
           setDistance(movedDistance)
           if(!time){
-            setStepTime(moment())
+            setStepTime(moment());
           }else{
             const timeDiff = moment() - stepTime;
             setVelocity(movedDistance/timeDiff);
+            setStepTime(moment());
           }
         }
       }
