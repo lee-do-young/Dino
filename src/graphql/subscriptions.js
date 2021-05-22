@@ -5,8 +5,11 @@ export const onCreateGame = /* GraphQL */ `
   subscription OnCreateGame {
     onCreateGame {
       id
-      created
-      ended
+      status
+      createTime
+      duration
+      startTime
+      endTime
       players {
         items {
           id
@@ -26,8 +29,11 @@ export const onUpdateGame = /* GraphQL */ `
   subscription OnUpdateGame {
     onUpdateGame {
       id
-      created
-      ended
+      status
+      createTime
+      duration
+      startTime
+      endTime
       players {
         items {
           id
@@ -47,8 +53,11 @@ export const onDeleteGame = /* GraphQL */ `
   subscription OnDeleteGame {
     onDeleteGame {
       id
-      created
-      ended
+      status
+      createTime
+      duration
+      startTime
+      endTime
       players {
         items {
           id
@@ -72,8 +81,11 @@ export const onCreatePlayer = /* GraphQL */ `
       distance
       game {
         id
-        created
-        ended
+        status
+        createTime
+        duration
+        startTime
+        endTime
         players {
           nextToken
         }
@@ -93,8 +105,11 @@ export const onUpdatePlayer = /* GraphQL */ `
       distance
       game {
         id
-        created
-        ended
+        status
+        createTime
+        duration
+        startTime
+        endTime
         players {
           nextToken
         }
@@ -114,8 +129,11 @@ export const onDeletePlayer = /* GraphQL */ `
       distance
       game {
         id
-        created
-        ended
+        status
+        createTime
+        duration
+        startTime
+        endTime
         players {
           nextToken
         }

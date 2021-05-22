@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { requestCreateGame } from "../../utils";
 
 const styles = StyleSheet.create({
   input: {
@@ -37,7 +38,7 @@ export default function Main() {
     <View>
       <Text>Hello!</Text>
       <TextInput placeholder="Nickname" style={styles.input} value={userName} onChangeText={setUserName} />
-      {userName.length>0?<Button title="Start game" onPress={configureUserName}/>:null}
+      {userName.length>0?<Button title="Start game" onPress={requestCreateGame}/>:null}
     </View>
   );
 }
