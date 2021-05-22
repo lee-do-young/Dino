@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { UserContext } from '../context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
 const USER_INFO_KEY = "@userInfo"
 
 export default function useUser(){

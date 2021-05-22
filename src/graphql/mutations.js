@@ -9,10 +9,8 @@ export const createGame = /* GraphQL */ `
     createGame(input: $input, condition: $condition) {
       id
       status
-      createTime
       duration
-      startTime
-      endTime
+      createTime
       players {
         items {
           id
@@ -36,10 +34,8 @@ export const updateGame = /* GraphQL */ `
     updateGame(input: $input, condition: $condition) {
       id
       status
-      createTime
       duration
-      startTime
-      endTime
+      createTime
       players {
         items {
           id
@@ -63,10 +59,8 @@ export const deleteGame = /* GraphQL */ `
     deleteGame(input: $input, condition: $condition) {
       id
       status
-      createTime
       duration
-      startTime
-      endTime
+      createTime
       players {
         items {
           id
@@ -94,10 +88,8 @@ export const createPlayer = /* GraphQL */ `
       game {
         id
         status
-        createTime
         duration
-        startTime
-        endTime
+        createTime
         players {
           nextToken
         }
@@ -121,10 +113,8 @@ export const updatePlayer = /* GraphQL */ `
       game {
         id
         status
-        createTime
         duration
-        startTime
-        endTime
+        createTime
         players {
           nextToken
         }
@@ -148,10 +138,8 @@ export const deletePlayer = /* GraphQL */ `
       game {
         id
         status
-        createTime
         duration
-        startTime
-        endTime
+        createTime
         players {
           nextToken
         }

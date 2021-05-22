@@ -1,39 +1,75 @@
+import moment from "moment";
 import { useContext } from 'react';
-import { UserContext } from '../context';
+import { GameContext } from '../context';
+import { searchGame, updateGameState, requestCreateGame, subscribeOnUpdateGame, requestCreatePlayer } from "../utils";
 
-const USER_INFO_KEY = "@userInfo"
+const MATCHING_WAITING_TIME = 10 * 1000; // 1 min
 
-const useUser = () => {
-  const [ userState, setUserState ] = useContext(UserContext);
+export default function useGame(){
+  const [ gameState, setGameState ] = useContext(GameContext);
 
-  async function loadUserInfo(){
-    const userInfo = await AsyncStorage.getItem(USER_INFO_KEY)
-    if(userInfo!==null){
-      setUserState(userInfo)
+  async function startGame({ duration }){
+    let myGame;
+    let isHost = false;
+    const availableGames = await searchGame({ duration })
+    
+    if(availableGames.length> 0){
+      myGame = availableGames[0]
+      
+    }else{
+      myGame = await requestCreateGame({duration})
+      isHost = true;
+    }
+
+    // Start Subscribe game
+    const gameSubscription = await subscribeOnUpdateGame({
+      gameId: myGame.id,
+      hook: (gameInfo)=>{
+        console.log(gameInfo);
+      }
+    })
+
+    const createdPlayer = await requestCreatePlayer({
+      gameId: myGame.id,
+      name: "newUesr"
+    })
+    console.log(createdPlayer);
+    setGameState((prev) => ({
+      ...prev,
+      gameInfo: myGame,
+      gameSubscription,
+    }))
+
+    if(isHost){
+      // Reserve start game;
+      setTimeout(()=>{
+        const newGameInfo = {
+          id:myGame.id,
+          status: "start"
+        }
+        updateGameState({
+          gameInfo: newGameInfo
+        })
+      }, MATCHING_WAITING_TIME)
+    }
+    
+  }
+
+  async function finishGame(){
+    if(gameState.gameSubscription){
+      gameState.gameSubscription.unsubscribe();
+    }
+    if(gameState.playerSubscriptionArray){
+      gameState.playerSubscriptionArray.forEach(subs=>{
+        subs.unsubscribe();
+      })
     }
   }
 
-  async function changeUserName(userName){
-    const stringfiedInfo = JSON.stringify({
-      ...userState,
-      userName,
-    })
-    AsyncStorage.setItem(USER_INFO_KEY, stringfiedInfo)
-  }
-
-  async function storeUserInfo(userInfo){
-    const stringfiedInfo = JSON.stringify({
-      ...userState,
-      ...userInfo,
-    })
-    AsyncStorage.setItem(USER_INFO_KEY, userName)
-  }
-
   return {
-    loadUserInfo,
-    changeUserName,
-    storeUserInfo,
+    gameInfo: gameState.gameInfo,
+    playerInfoArray: gameState.playerInfoArray,
+    startGame,
+    finishGame,
   }
 }
-
-export default useUser;

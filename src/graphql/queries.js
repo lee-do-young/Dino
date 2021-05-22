@@ -6,10 +6,8 @@ export const getGame = /* GraphQL */ `
     getGame(id: $id) {
       id
       status
-      createTime
       duration
-      startTime
-      endTime
+      createTime
       players {
         items {
           id
@@ -35,10 +33,8 @@ export const listGames = /* GraphQL */ `
       items {
         id
         status
-        createTime
         duration
-        startTime
-        endTime
+        createTime
         players {
           nextToken
         }
@@ -58,10 +54,8 @@ export const getPlayer = /* GraphQL */ `
       game {
         id
         status
-        createTime
         duration
-        startTime
-        endTime
+        createTime
         players {
           nextToken
         }
@@ -87,10 +81,8 @@ export const listPlayers = /* GraphQL */ `
         game {
           id
           status
-          createTime
           duration
-          startTime
-          endTime
+          createTime
           createdAt
           updatedAt
         }

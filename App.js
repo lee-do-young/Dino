@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import Amplify from 'aws-amplify'
-import config from './aws-exports'
+import config from './src/aws-exports'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { UserProvider, GameProvider } from "./src/context";
