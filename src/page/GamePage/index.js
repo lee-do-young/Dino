@@ -10,7 +10,7 @@ function Player({player}){
       {player.uid||"No name"}
     </Text>
     <Text>
-      Distance: {player.distance|| 0}
+      Speed: {player.speed|| 0}
     </Text>
   </React.Fragment>
 }
@@ -21,19 +21,6 @@ function GamePage({ navigation }){
   const [ playerList, setPlayerList] = useState([]);
   const [ distance, setDistance ] = useState(0);
   const [ loading, setLoading] = useState(false);
-  
-  async function requestUpdateDistance(){
-    setLoading(true);
-    await updateUserDistance({uid, distance});
-    setLoading(false);
-  }
-
-  useEffect(()=>{
-    if(!loading){
-      console.log("requestUpdateDistance");
-      requestUpdateDistance();
-    }
-  }, [distance])
   
   useEffect(() => {
     if(gameInfo&&gameInfo.gameData){

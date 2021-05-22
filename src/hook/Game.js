@@ -3,8 +3,6 @@ import moment from "moment";
 import { useContext } from 'react';
 import { GameContext } from '../context';
 import { searchGame, updateGameState, requestCreateGame, subscribeOnUpdateGame } from "../utils";
-import Amplify, { PubSub } from 'aws-amplify';
-import { AWSIoTProvider } from '@aws-amplify/pubsub';
 
 const MATCHING_WAITING_TIME = 60 * 1000; // 1 min
 const MAX_PEOPLE_IN_GAME = 2;
@@ -12,7 +10,7 @@ const MAX_PEOPLE_IN_GAME = 2;
 export default function useGame(){
   const [ gameState, setGameState ] = useContext(GameContext);
 
-  async function startGame({ duration, userName }){
+  async function startGame({ duration, userName, userSpeed }){
     if(gameState.gameSubscription){
       gameState.gameSubscription.unsubscribe();
     }
@@ -35,7 +33,7 @@ export default function useGame(){
           ...gameData,
           [uid]: {
             name: userName,
-            distance: 0,
+            speed: userSpeed,
           }
         }),
       }
@@ -53,7 +51,7 @@ export default function useGame(){
       myGame = await requestCreateGame({duration, gameData: {
         [uid]: {
           name: userName,
-          distance: 0,
+          speed: userSpeed
         }
       }})
       isHost = true;
