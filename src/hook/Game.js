@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import { GameContext } from '../context';
 import { searchGame, updateGameState, requestCreateGame, subscribeOnUpdateGame } from "../utils";
 
-const MATCHING_WAITING_TIME = 60 * 1000; // 1 min
+const MATCHING_WAITING_TIME = 2 * 1000; // 1 min
 const MAX_PEOPLE_IN_GAME = 2;
 
 export default function useGame(){
@@ -23,7 +23,7 @@ export default function useGame(){
     let isHost = false;
     const uid = uuid.v4();
     const availableGames = await searchGame({ duration })
-    console.log(availableGames.length);
+
     if(availableGames.length> 0){
       myGame = availableGames[0]
       const gameData = JSON.parse(availableGames[0].gameData);
@@ -34,6 +34,8 @@ export default function useGame(){
           [uid]: {
             name: userName,
             speed: userSpeed,
+            distance: 0,
+            status: "person"
           }
         }),
       }
@@ -51,12 +53,14 @@ export default function useGame(){
       myGame = await requestCreateGame({duration, gameData: {
         [uid]: {
           name: userName,
-          speed: userSpeed
+          speed: userSpeed,
+          distance: 0,
+          status: "person"
         }
       }})
       isHost = true;
     }
-    let timeoutCleared = false;
+
     let timeoutStart;
     let endTimeStop;
     if(isHost){
@@ -64,11 +68,25 @@ export default function useGame(){
       timeoutStart = setTimeout(()=>{
         const startTime = moment();
         const endTime = startTime.add(duration, "m");
+        const newGameData = JSON.parse(myGame.gameData)
+        const currentPeopleCount = Object.keys(newGameData).length;
+        for(let i=0; i<MAX_PEOPLE_IN_GAME-currentPeopleCount; i+=1){
+          const id = uuid.v4();
+          newGameData[id] = {
+            uid: id,
+            speed: 1.5,
+            distance: -10,
+            status: "zombie"
+          }
+        }
         const newGameInfo = {
           id:myGame.id,
           status: "start",
           startTime: `${startTime.format("YYYY-MM-DDThh:mm:ss.SSS")}Z`,
           endTime: `${endTime.format("YYYY-MM-DDThh:mm:ss.SSS")}Z`,
+          gameData: JSON.stringify({
+            ...newGameData,
+          })
         }
         updateGameState({
           gameInfo: newGameInfo
@@ -89,8 +107,7 @@ export default function useGame(){
     const gameSubscription = subscribeOnUpdateGame({
       gameId: myGame.id,
       hook: (gameInfo)=>{
-        const parsedGameInfo = {...gameInfo, gameData: JSON.parse(gameInfo.gameData)}
-        if(isHost && parsedGameInfo.status==="start"){
+        if(isHost && gameInfo.status==="start"){
           if(!Number.isInteger(timeoutStart)){
             timeoutStart.unsubscribe();
           }
@@ -108,7 +125,10 @@ export default function useGame(){
         }
         setGameState(prev=>({
           ...prev,
-          gameInfo: parsedGameInfo,
+          gameInfo: {
+            ...gameInfo,
+            gameData: JSON.parse(gameInfo.gameData)
+          },
         }))
       }
     })
@@ -138,29 +158,14 @@ export default function useGame(){
     }))
   }
 
-  async function updateUserDistance({ uid, distance }){
-    if(gameState.gameInfo){
-      console.log({ uid, distance });
-      const gameInfo = gameState.gameInfo;
-      const userInfo = {
-        ...gameInfo.gameData[uid],
-        distance,
+  function updateAgentsPosition({ updatedData }){
+    setGameState(prev => ({
+      ...prev,
+      gameInfo: {
+        ...prev.gameInfo,
+        gameData: updatedData,
       }
-      const newGameInfo = {
-        id: gameInfo.id,
-        gameData: JSON.stringify({
-          ...gameInfo.gameData,
-          [uid]: userInfo
-        })
-      }
-      updateGameState({
-        gameInfo: newGameInfo
-      })
-      return updateGameState({
-        gameInfo: newGameInfo
-      })
-    }
-    return null
+    }))
   }
 
   return {
@@ -168,6 +173,6 @@ export default function useGame(){
     gameInfo: gameState.gameInfo,
     startGame,
     finishGame,
-    updateUserDistance,
+    updateAgentsPosition,
   }
 }
