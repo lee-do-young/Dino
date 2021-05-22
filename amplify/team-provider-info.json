@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-dino-dev-142139-authRole",
+      "UnauthRoleArn": "arn:aws:iam::267568390261:role/amplify-dino-dev-142139-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::267568390261:role/amplify-dino-dev-142139-authRole",
+      "Region": "ap-northeast-2",
+      "DeploymentBucketName": "amplify-dino-dev-142139-deployment",
+      "UnauthRoleName": "amplify-dino-dev-142139-unauthRole",
+      "StackName": "amplify-dino-dev-142139",
+      "StackId": "arn:aws:cloudformation:ap-northeast-2:267568390261:stack/amplify-dino-dev-142139/98349420-babd-11eb-8b1e-0a90b90a65f8",
+      "AmplifyAppId": "dvrb2zwbr3o1d"
+    }
+  }
+}
