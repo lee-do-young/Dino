@@ -1,7 +1,7 @@
 import { API, graphqlOperation } from 'aws-amplify';
 import { createGame, updateGame, createPlayer } from "./graphql/mutations"
 import { listGames } from "./graphql/queries"
-import { onUpdateGame } from "./graphql/subscriptions";
+import { onCreatePlayer, onUpdateGame } from "./graphql/subscriptions";
 import moment from "moment";
 
 
@@ -43,7 +43,6 @@ async function requestCreateGame({
   duration = 5,
 }){
   const createTime = `${moment().format("YYYY-MM-DDThh:mm:ss.SSS")}Z`;
-  console.log(createTime)
   const createdGame = await API.graphql(graphqlOperation(createGame, {
     input: {
         status: "waiting",
@@ -70,25 +69,10 @@ async function requestStartGame({
   }))
 }
 
-async function subscribeOnUpdateGame({ gameId, hook }){
-  return API.graphql(
-    graphqlOperation(onUpdateGame), {
-      id: gameId
-    }
-  ).subscribe({
-    next: ({provider, value}) => {
-      console.log("data", value.data.onUpdateGame);
-      // hook(value.data.onUpdateGame)
-    },
-    error: error=> console.warn(error)
-  })
-}
-
 async function requestCreatePlayer({
   gameId,
   name,
 }){
-  console.log("requestCreatePlayer", gameId);
   const createdPlayer = await API.graphql(graphqlOperation(createPlayer, {
     input: {
       name,
@@ -111,13 +95,43 @@ async function requestUpdatePlayer({
   }))
 }
 
+function subscribeOnUpdateGame({ gameId, hook }){
+  return API.graphql(
+    graphqlOperation(onUpdateGame), {
+      id: gameId
+    }
+  ).subscribe({
+    next: ({provider, value}) => {
+      console.log(provider, value)
+      // hook(value.data.onUpdateGame)
+      // return null
+    },
+    error: error=> console.warn(error)
+  })
+}
+
+function subscribeOnCreatePlayer({ gameId, hook }){
+  return API.graphql(
+    graphqlOperation(onCreatePlayer), {
+      playerGameId: gameId
+    }
+  ).subscribe({
+    next: ({provider, value}) => {
+      hook(value.data.onCreatePlayer)
+      return null
+    },
+    error: error=> console.warn(error)
+  })
+}
+
 
 module.exports = {
   searchGame,
   updateGameState,
   requestCreateGame,
   requestStartGame,
-  subscribeOnUpdateGame,
   requestCreatePlayer,
   requestUpdatePlayer,
+  subscribeOnUpdateGame,
+  subscribeOnCreatePlayer,
 }

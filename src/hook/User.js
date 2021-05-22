@@ -11,7 +11,6 @@ export default function useUser(){
   async function loadUserInfo(){
     const userInfo = await AsyncStorage.getItem(USER_INFO_KEY)
     if(userInfo!==null){
-      console.log(userInfo);
       setUserState(userInfo)
     }
   }

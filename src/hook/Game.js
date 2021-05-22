@@ -1,7 +1,6 @@
-import moment from "moment";
 import { useContext } from 'react';
 import { GameContext } from '../context';
-import { searchGame, updateGameState, requestCreateGame, subscribeOnUpdateGame, requestCreatePlayer } from "../utils";
+import { searchGame, updateGameState, requestCreateGame, requestCreatePlayer, subscribeOnUpdateGame, subscribeOnCreatePlayer } from "../utils";
 
 const MATCHING_WAITING_TIME = 10 * 1000; // 1 min
 
@@ -9,6 +8,14 @@ export default function useGame(){
   const [ gameState, setGameState ] = useContext(GameContext);
 
   async function startGame({ duration }){
+    if(gameState.gameSubscription){
+      gameState.gameSubscription.unsubscribe();
+    }
+    if(gameState.playerSubscriptionArray){
+      gameState.playerSubscriptionArray.forEach(subs=>{
+        subs.unsubscribe();
+      })
+    }
     let myGame;
     let isHost = false;
     const availableGames = await searchGame({ duration })
@@ -22,10 +29,10 @@ export default function useGame(){
     }
 
     // Start Subscribe game
-    const gameSubscription = await subscribeOnUpdateGame({
+    const gameSubscription = subscribeOnUpdateGame({
       gameId: myGame.id,
       hook: (gameInfo)=>{
-        console.log(gameInfo);
+        console.log("Somebody get in room", gameInfo)
       }
     })
 
@@ -33,26 +40,25 @@ export default function useGame(){
       gameId: myGame.id,
       name: "newUesr"
     })
-    console.log(createdPlayer);
     setGameState((prev) => ({
       ...prev,
       gameInfo: myGame,
       gameSubscription,
+      playerInfoArray: [createdPlayer, ...myGame.players.items]
     }))
 
-    if(isHost){
-      // Reserve start game;
-      setTimeout(()=>{
-        const newGameInfo = {
-          id:myGame.id,
-          status: "start"
-        }
-        updateGameState({
-          gameInfo: newGameInfo
-        })
-      }, MATCHING_WAITING_TIME)
-    }
-    
+    // if(isHost){
+    //   // Reserve start game;
+    //   setTimeout(()=>{
+    //     const newGameInfo = {
+    //       id:myGame.id,
+    //       status: "start"
+    //     }
+    //     updateGameState({
+    //       gameInfo: newGameInfo
+    //     })
+    //   }, MATCHING_WAITING_TIME)
+    // }
   }
 
   async function finishGame(){
@@ -64,6 +70,12 @@ export default function useGame(){
         subs.unsubscribe();
       })
     }
+    setGameState(prev=>({
+      gameInfo: null,
+      gameSubscription: null,
+      playerSubscriptionArray: [],
+      playerInfoArray: [],
+    }))
   }
 
   return {

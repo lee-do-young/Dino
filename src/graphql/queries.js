@@ -36,6 +36,13 @@ export const listGames = /* GraphQL */ `
         duration
         createTime
         players {
+          items {
+            id
+            name
+            distance
+            createdAt
+            updatedAt
+          }
           nextToken
         }
         createdAt
