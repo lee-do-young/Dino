@@ -15,13 +15,19 @@
     "aws-amplify": "^4.0.2",
     "aws-amplify-react-native": "^5.0.0",
     "expo": "~41.0.1",
+    "expo-location": "^12.0.4",
     "expo-status-bar": "~1.0.4",
+    "expo-task-manager": "^9.1.0",
+    "is-arrayish": "^0.3.2",
     "moment": "^2.29.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-41.0.0.tar.gz",
+    "react-native-gesture-handler": "^1.10.3",
+    "react-native-screens": "^3.2.0",
     "react-native-uuid": "^2.0.1",
-    "react-native-web": "~0.13.12"
+    "react-native-web": "~0.13.12",
+    "zen-observable": "^0.8.15"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"

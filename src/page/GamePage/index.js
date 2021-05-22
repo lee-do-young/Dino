@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import { Text, View, Button, TextInput } from 'react-native';
 import useGame from "../../hook/Game";
+import * as Location from 'expo-location';
 
 function Player({player}){
 
@@ -8,12 +9,31 @@ function Player({player}){
     <Text>
       {player.uid||"No name"}
     </Text>
+    <Text>
+      Distance: {player.distance|| 0}
+    </Text>
   </React.Fragment>
 }
+
  
 function GamePage({ navigation }){
-  const { uid, gameInfo, startGame, finishGame } = useGame();
+  const { uid, gameInfo, startGame, finishGame, updateUserDistance } = useGame();
   const [ playerList, setPlayerList] = useState([]);
+  const [ distance, setDistance ] = useState(0);
+  const [ loading, setLoading] = useState(false);
+  
+  async function requestUpdateDistance(){
+    setLoading(true);
+    await updateUserDistance({uid, distance});
+    setLoading(false);
+  }
+
+  useEffect(()=>{
+    if(!loading){
+      console.log("requestUpdateDistance");
+      requestUpdateDistance();
+    }
+  }, [distance])
   
   useEffect(() => {
     if(gameInfo&&gameInfo.gameData){
@@ -23,15 +43,42 @@ function GamePage({ navigation }){
           uid,
         }
       })])
+      if(gameInfo.status==="start"){
+        setDistance(100);
+      }
     }else{
       setPlayerList([])
     }
   }, [gameInfo])
 
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        alert('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.watchPositionAsync({
+        accuracy: Location.Accuracy.BestForNavigation,
+        distanceInterval: 10,
+       },
+      (loc) => {
+        if(gameInfo&&gameInfo.status==="start"){
+          console.log("update distance")
+          const movedDistance = distance+10;
+          setDistance(movedDistance)
+        }
+      }
+    );
+    })();
+  }, []);
+
   function renderGameInfo(){
     return <React.Fragment>
       <Text>{gameInfo.status}</Text>
       <Text>uid: {uid}</Text>
+      <Text>distance: {distance}</Text>
       <Text>createTime: {gameInfo.createTime}</Text>
       <Text>startTime: {gameInfo.startTime}</Text>
       <Text>endTime: {gameInfo.endTime}</Text>
@@ -46,15 +93,15 @@ function GamePage({ navigation }){
     </React.Fragment>
   }
 
-
   return <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
     <Text>GamePage</Text>
     {!gameInfo?
       <Button title={"Start game"} onPress={()=>{
         startGame({
-          duration: 1,
+          duration: 3,
           userName: "user"
         });
+        setDistance(0);
       }}/>:
       <Button title={"End game"} onPress={()=>{
         finishGame();

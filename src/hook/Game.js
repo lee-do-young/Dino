@@ -3,9 +3,11 @@ import moment from "moment";
 import { useContext } from 'react';
 import { GameContext } from '../context';
 import { searchGame, updateGameState, requestCreateGame, subscribeOnUpdateGame } from "../utils";
+import Amplify, { PubSub } from 'aws-amplify';
+import { AWSIoTProvider } from '@aws-amplify/pubsub';
 
-const MATCHING_WAITING_TIME = 10 * 1000; // 1 min
-const MAX_PEOPLE_IN_GAME = 3;
+const MATCHING_WAITING_TIME = 60 * 1000; // 1 min
+const MAX_PEOPLE_IN_GAME = 2;
 
 export default function useGame(){
   const [ gameState, setGameState ] = useContext(GameContext);
@@ -138,10 +140,36 @@ export default function useGame(){
     }))
   }
 
+  async function updateUserDistance({ uid, distance }){
+    if(gameState.gameInfo){
+      console.log({ uid, distance });
+      const gameInfo = gameState.gameInfo;
+      const userInfo = {
+        ...gameInfo.gameData[uid],
+        distance,
+      }
+      const newGameInfo = {
+        id: gameInfo.id,
+        gameData: JSON.stringify({
+          ...gameInfo.gameData,
+          [uid]: userInfo
+        })
+      }
+      updateGameState({
+        gameInfo: newGameInfo
+      })
+      return updateGameState({
+        gameInfo: newGameInfo
+      })
+    }
+    return null
+  }
+
   return {
     uid: gameState.uid,
     gameInfo: gameState.gameInfo,
     startGame,
     finishGame,
+    updateUserDistance,
   }
 }
