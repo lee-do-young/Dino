@@ -20,7 +20,7 @@ export default function useUser(){
       ...userState.userInfo,
       userName,
     })
-    AsyncStorage.setItem(USER_INFO_KEY, stringfiedInfo)
+    return AsyncStorage.setItem(USER_INFO_KEY, stringfiedInfo)
   }
 
   async function storeUserInfo(userInfo){
@@ -28,7 +28,7 @@ export default function useUser(){
       ...userState.userInfo,
       ...userInfo,
     })
-    AsyncStorage.setItem(USER_INFO_KEY, userName)
+    return AsyncStorage.setItem(USER_INFO_KEY, stringfiedInfo)
   }
 
   return {
