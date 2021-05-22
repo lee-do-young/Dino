@@ -1,7 +1,7 @@
 type Game @model {
   id: ID!
-  created: AWSTimestamp!
-  ended: AWSTimestamp!
+  startTime: AWSTimestamp!
+  endTime: AWSTimestamp!
   players: [Player] @connection(name: "GamePlayers")
 }
 
