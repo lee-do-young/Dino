@@ -11,16 +11,9 @@ export const createGame = /* GraphQL */ `
       status
       duration
       createTime
-      players {
-        items {
-          id
-          name
-          distance
-          createdAt
-          updatedAt
-        }
-        nextToken
-      }
+      startTime
+      endTime
+      gameData
       createdAt
       updatedAt
     }
@@ -36,16 +29,9 @@ export const updateGame = /* GraphQL */ `
       status
       duration
       createTime
-      players {
-        items {
-          id
-          name
-          distance
-          createdAt
-          updatedAt
-        }
-        nextToken
-      }
+      startTime
+      endTime
+      gameData
       createdAt
       updatedAt
     }
@@ -61,91 +47,9 @@ export const deleteGame = /* GraphQL */ `
       status
       duration
       createTime
-      players {
-        items {
-          id
-          name
-          distance
-          createdAt
-          updatedAt
-        }
-        nextToken
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const createPlayer = /* GraphQL */ `
-  mutation CreatePlayer(
-    $input: CreatePlayerInput!
-    $condition: ModelPlayerConditionInput
-  ) {
-    createPlayer(input: $input, condition: $condition) {
-      id
-      name
-      distance
-      game {
-        id
-        status
-        duration
-        createTime
-        players {
-          nextToken
-        }
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const updatePlayer = /* GraphQL */ `
-  mutation UpdatePlayer(
-    $input: UpdatePlayerInput!
-    $condition: ModelPlayerConditionInput
-  ) {
-    updatePlayer(input: $input, condition: $condition) {
-      id
-      name
-      distance
-      game {
-        id
-        status
-        duration
-        createTime
-        players {
-          nextToken
-        }
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const deletePlayer = /* GraphQL */ `
-  mutation DeletePlayer(
-    $input: DeletePlayerInput!
-    $condition: ModelPlayerConditionInput
-  ) {
-    deletePlayer(input: $input, condition: $condition) {
-      id
-      name
-      distance
-      game {
-        id
-        status
-        duration
-        createTime
-        players {
-          nextToken
-        }
-        createdAt
-        updatedAt
-      }
+      startTime
+      endTime
+      gameData
       createdAt
       updatedAt
     }

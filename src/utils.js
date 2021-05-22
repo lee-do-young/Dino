@@ -41,13 +41,15 @@ async function updateGameState({
 
 async function requestCreateGame({
   duration = 5,
+  gameData
 }){
   const createTime = `${moment().format("YYYY-MM-DDThh:mm:ss.SSS")}Z`;
   const createdGame = await API.graphql(graphqlOperation(createGame, {
     input: {
-        status: "waiting",
-        duration,
-        createTime,
+      status: "waiting",
+      duration,
+      createTime,
+      gameData: JSON.stringify(gameData),
     }
   }))
   return createdGame.data.createGame
@@ -69,32 +71,6 @@ async function requestStartGame({
   }))
 }
 
-async function requestCreatePlayer({
-  gameId,
-  name,
-}){
-  const createdPlayer = await API.graphql(graphqlOperation(createPlayer, {
-    input: {
-      name,
-      distance: 0,
-      playerGameId: gameId,
-    }
-  }))
-  return createdPlayer.data.createPlayer
-}
-
-async function requestUpdatePlayer({
-  playerId,
-  distance
-}){
-  return API.graphql(graphqlOperation(updatePlayer, {
-    input: {
-      id: playerId,
-      distance: distance,
-    }
-  }))
-}
-
 function subscribeOnUpdateGame({ gameId, hook }){
   return API.graphql(
     graphqlOperation(onUpdateGame), {
@@ -102,36 +78,16 @@ function subscribeOnUpdateGame({ gameId, hook }){
     }
   ).subscribe({
     next: ({provider, value}) => {
-      console.log(provider, value)
-      // hook(value.data.onUpdateGame)
-      // return null
+      hook(value.data.onUpdateGame)
     },
     error: error=> console.warn(error)
   })
 }
 
-function subscribeOnCreatePlayer({ gameId, hook }){
-  return API.graphql(
-    graphqlOperation(onCreatePlayer), {
-      playerGameId: gameId
-    }
-  ).subscribe({
-    next: ({provider, value}) => {
-      hook(value.data.onCreatePlayer)
-      return null
-    },
-    error: error=> console.warn(error)
-  })
-}
-
-
-module.exports = {
+export {
   searchGame,
   updateGameState,
   requestCreateGame,
   requestStartGame,
-  requestCreatePlayer,
-  requestUpdatePlayer,
   subscribeOnUpdateGame,
-  subscribeOnCreatePlayer,
 }

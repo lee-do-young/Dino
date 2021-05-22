@@ -4,6 +4,7 @@ const GameContext = createContext([{}, () => {}]);
 
 const GameProvider = (props) => {
     const [ state, setState ] = useState({
+        uid: null,
         gameInfo: null,
         gameSubscription: null,
         playerInfoArray: [],

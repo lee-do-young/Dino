@@ -8,16 +8,9 @@ export const onCreateGame = /* GraphQL */ `
       status
       duration
       createTime
-      players {
-        items {
-          id
-          name
-          distance
-          createdAt
-          updatedAt
-        }
-        nextToken
-      }
+      startTime
+      endTime
+      gameData
       createdAt
       updatedAt
     }
@@ -30,16 +23,9 @@ export const onUpdateGame = /* GraphQL */ `
       status
       duration
       createTime
-      players {
-        items {
-          id
-          name
-          distance
-          createdAt
-          updatedAt
-        }
-        nextToken
-      }
+      startTime
+      endTime
+      gameData
       createdAt
       updatedAt
     }
@@ -52,82 +38,9 @@ export const onDeleteGame = /* GraphQL */ `
       status
       duration
       createTime
-      players {
-        items {
-          id
-          name
-          distance
-          createdAt
-          updatedAt
-        }
-        nextToken
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onCreatePlayer = /* GraphQL */ `
-  subscription OnCreatePlayer {
-    onCreatePlayer {
-      id
-      name
-      distance
-      game {
-        id
-        status
-        duration
-        createTime
-        players {
-          nextToken
-        }
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onUpdatePlayer = /* GraphQL */ `
-  subscription OnUpdatePlayer {
-    onUpdatePlayer {
-      id
-      name
-      distance
-      game {
-        id
-        status
-        duration
-        createTime
-        players {
-          nextToken
-        }
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onDeletePlayer = /* GraphQL */ `
-  subscription OnDeletePlayer {
-    onDeletePlayer {
-      id
-      name
-      distance
-      game {
-        id
-        status
-        duration
-        createTime
-        players {
-          nextToken
-        }
-        createdAt
-        updatedAt
-      }
+      startTime
+      endTime
+      gameData
       createdAt
       updatedAt
     }

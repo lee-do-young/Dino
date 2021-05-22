@@ -6,20 +6,32 @@ function Player({player}){
 
   return <React.Fragment>
     <Text>
-      {player.name||"No name"}
+      {player.uid||"No name"}
     </Text>
   </React.Fragment>
 }
  
 function GamePage({ navigation }){
-  const { gameInfo, playerInfoArray, startGame, finishGame } = useGame();
+  const { uid, gameInfo, startGame, finishGame } = useGame();
+  const [ playerList, setPlayerList] = useState([]);
   
   useEffect(() => {
-  }, [gameInfo, playerInfoArray])
+    if(gameInfo&&gameInfo.gameData){
+      setPlayerList([...Object.keys(gameInfo.gameData).map(uid=>{
+        return {
+          ...gameInfo.gameData[uid],
+          uid,
+        }
+      })])
+    }else{
+      setPlayerList([])
+    }
+  }, [gameInfo])
 
   function renderGameInfo(){
     return <React.Fragment>
       <Text>{gameInfo.status}</Text>
+      <Text>uid: {uid}</Text>
       <Text>createTime: {gameInfo.createTime}</Text>
       <Text>startTime: {gameInfo.startTime}</Text>
       <Text>endTime: {gameInfo.endTime}</Text>
@@ -28,8 +40,8 @@ function GamePage({ navigation }){
 
   function renderPlayerList(){
     return <React.Fragment>
-      {playerInfoArray.map(player => {
-        return <Player player={player}/>
+      {playerList.map(player => {
+        return <Player key={player.id} player={player}/>
       })}
     </React.Fragment>
   }
@@ -42,7 +54,8 @@ function GamePage({ navigation }){
     }}/>
     <Button title={"Start game"} onPress={()=>{
       startGame({
-        duration: 7
+        duration: 7,
+        userName: "user"
       });
     }}/>
     <Button title={"End game"} onPress={()=>{
@@ -52,7 +65,7 @@ function GamePage({ navigation }){
       navigation.navigate('end')
     }}/>
     {gameInfo?renderGameInfo():null}
-    {playerInfoArray.length>0?renderPlayerList():null}
+    {playerList?renderPlayerList():null}
   </View>
 }
 

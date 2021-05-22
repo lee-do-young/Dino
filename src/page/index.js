@@ -3,7 +3,7 @@ import StartPage from "./StartPage";
 import GamePage from "./GamePage";
 import EndPage from "./EndPage";
 
-module.exports= {
+export {
   TutorialPage,
   StartPage,
   GamePage,

@@ -1,7 +1,7 @@
 import { useUser } from "./User.js";
 import { useGame } from "./Game.js";
 
-module.exports = {
+export {
   useUser,
   useGame
 }

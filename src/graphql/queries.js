@@ -8,16 +8,9 @@ export const getGame = /* GraphQL */ `
       status
       duration
       createTime
-      players {
-        items {
-          id
-          name
-          distance
-          createdAt
-          updatedAt
-        }
-        nextToken
-      }
+      startTime
+      endTime
+      gameData
       createdAt
       updatedAt
     }
@@ -35,64 +28,9 @@ export const listGames = /* GraphQL */ `
         status
         duration
         createTime
-        players {
-          items {
-            id
-            name
-            distance
-            createdAt
-            updatedAt
-          }
-          nextToken
-        }
-        createdAt
-        updatedAt
-      }
-      nextToken
-    }
-  }
-`;
-export const getPlayer = /* GraphQL */ `
-  query GetPlayer($id: ID!) {
-    getPlayer(id: $id) {
-      id
-      name
-      distance
-      game {
-        id
-        status
-        duration
-        createTime
-        players {
-          nextToken
-        }
-        createdAt
-        updatedAt
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const listPlayers = /* GraphQL */ `
-  query ListPlayers(
-    $filter: ModelPlayerFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listPlayers(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        name
-        distance
-        game {
-          id
-          status
-          duration
-          createTime
-          createdAt
-          updatedAt
-        }
+        startTime
+        endTime
+        gameData
         createdAt
         updatedAt
       }
