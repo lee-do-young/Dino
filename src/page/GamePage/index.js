@@ -49,18 +49,17 @@ function GamePage({ navigation }){
 
   return <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
     <Text>GamePage</Text>
-    <Button title={"End game"} onPress={()=>{
-      finishGame();
-    }}/>
-    <Button title={"Start game"} onPress={()=>{
-      startGame({
-        duration: 7,
-        userName: "user"
-      });
-    }}/>
-    <Button title={"End game"} onPress={()=>{
-      finishGame();
-    }}/>
+    {!gameInfo?
+      <Button title={"Start game"} onPress={()=>{
+        startGame({
+          duration: 1,
+          userName: "user"
+        });
+      }}/>:
+      <Button title={"End game"} onPress={()=>{
+        finishGame();
+      }}/>
+    }
     <Button title={"Next page"} onPress={()=>{
       navigation.navigate('end')
     }}/>

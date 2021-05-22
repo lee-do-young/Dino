@@ -37,6 +37,13 @@ export default function useGame(){
           }
         }),
       }
+      if(Object.keys(gameData).length + 1 >= MAX_PEOPLE_IN_GAME){
+        const startTime = moment();
+        const endTime = startTime.add(duration, "m");
+        gameInfo["status"] = "start"
+        gameInfo["startTime"] = `${startTime.format("YYYY-MM-DDThh:mm:ss.SSS")}Z`
+        gameInfo["endTime"] = `${endTime.format("YYYY-MM-DDThh:mm:ss.SSS")}Z`
+      }
       myGame = await updateGameState({
         gameInfo: gameInfo
       })
@@ -49,7 +56,9 @@ export default function useGame(){
       }})
       isHost = true;
     }
+    let timeoutCleared = false;
     let timeoutStart;
+    let endTimeStop;
     if(isHost){
       // Reserve start game;
       timeoutStart = setTimeout(()=>{
@@ -64,6 +73,15 @@ export default function useGame(){
         updateGameState({
           gameInfo: newGameInfo
         })
+        endTimeStop = setTimeout(() => {
+          const newGameInfo = {
+            id:myGame.id,
+            status: "finished",
+          }
+          updateGameState({
+            gameInfo: newGameInfo
+          })
+        }, duration*60*1000)
       }, MATCHING_WAITING_TIME)
     }
 
@@ -72,21 +90,21 @@ export default function useGame(){
       gameId: myGame.id,
       hook: (gameInfo)=>{
         const parsedGameInfo = {...gameInfo, gameData: JSON.parse(gameInfo.gameData)}
-        if(isHost && timeoutStart && Object.keys(parsedGameInfo.gameData).length>=MAX_PEOPLE_IN_GAME){
-          // Start 
-          clearTimeout(timeoutStart);
-          timeoutStart = undefined;
-          const startTime = moment();
-          const endTime = startTime.add(duration, "m");
-          const newGameInfo = {
-            id:myGame.id,
-            status: "start",
-            startTime: `${startTime.format("YYYY-MM-DDThh:mm:ss.SSS")}Z`,
-            endTime: `${endTime.format("YYYY-MM-DDThh:mm:ss.SSS")}Z`,
+        if(isHost && parsedGameInfo.status==="start"){
+          if(!Number.isInteger(timeoutStart)){
+            timeoutStart.unsubscribe();
           }
-          updateGameState({
-            gameInfo: newGameInfo
-          })
+          if(!endTimeStop){
+            endTimeStop = setTimeout(() => {
+              const newGameInfo = {
+                id:myGame.id,
+                status: "finished",
+              }
+              updateGameState({
+                gameInfo: newGameInfo
+              })
+            }, duration*60*500)
+          }
         }
         setGameState(prev=>({
           ...prev,
