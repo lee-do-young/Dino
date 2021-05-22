@@ -1,10 +1,11 @@
 import uuid from 'react-native-uuid';
+import moment from "moment";
 import { useContext } from 'react';
 import { GameContext } from '../context';
 import { searchGame, updateGameState, requestCreateGame, subscribeOnUpdateGame } from "../utils";
 
 const MATCHING_WAITING_TIME = 10 * 1000; // 1 min
-const MAX_PEOPLE_IN_GAME = 5;
+const MAX_PEOPLE_IN_GAME = 3;
 
 export default function useGame(){
   const [ gameState, setGameState ] = useContext(GameContext);
@@ -48,18 +49,22 @@ export default function useGame(){
       }})
       isHost = true;
     }
-
+    let timeoutStart;
     if(isHost){
       // Reserve start game;
-      // const timeoutStart = setTimeout(()=>{
-      //   const newGameInfo = {
-      //     id:myGame.id,
-      //     status: "start"
-      //   }
-      //   updateGameState({
-      //     gameInfo: newGameInfo
-      //   })
-      // }, MATCHING_WAITING_TIME)
+      timeoutStart = setTimeout(()=>{
+        const startTime = moment();
+        const endTime = startTime.add(duration, "m");
+        const newGameInfo = {
+          id:myGame.id,
+          status: "start",
+          startTime: `${startTime.format("YYYY-MM-DDThh:mm:ss.SSS")}Z`,
+          endTime: `${endTime.format("YYYY-MM-DDThh:mm:ss.SSS")}Z`,
+        }
+        updateGameState({
+          gameInfo: newGameInfo
+        })
+      }, MATCHING_WAITING_TIME)
     }
 
     // Start Subscribe game
@@ -67,6 +72,22 @@ export default function useGame(){
       gameId: myGame.id,
       hook: (gameInfo)=>{
         const parsedGameInfo = {...gameInfo, gameData: JSON.parse(gameInfo.gameData)}
+        if(isHost && timeoutStart && Object.keys(parsedGameInfo.gameData).length>=MAX_PEOPLE_IN_GAME){
+          // Start 
+          clearTimeout(timeoutStart);
+          timeoutStart = undefined;
+          const startTime = moment();
+          const endTime = startTime.add(duration, "m");
+          const newGameInfo = {
+            id:myGame.id,
+            status: "start",
+            startTime: `${startTime.format("YYYY-MM-DDThh:mm:ss.SSS")}Z`,
+            endTime: `${endTime.format("YYYY-MM-DDThh:mm:ss.SSS")}Z`,
+          }
+          updateGameState({
+            gameInfo: newGameInfo
+          })
+        }
         setGameState(prev=>({
           ...prev,
           gameInfo: parsedGameInfo,
