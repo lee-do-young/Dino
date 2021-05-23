@@ -4,8 +4,8 @@ import { useContext } from 'react';
 import { GameContext } from '../context';
 import { searchGame, updateGameState, requestCreateGame, subscribeOnUpdateGame } from "../utils";
 
-const MATCHING_WAITING_TIME = 2 * 1000; // 1 min
-const MAX_PEOPLE_IN_GAME = 2;
+const MATCHING_WAITING_TIME = 30 * 1000; // 1 min
+const MAX_PEOPLE_IN_GAME = 10;
 
 export default function useGame(){
   const [ gameState, setGameState ] = useContext(GameContext);
